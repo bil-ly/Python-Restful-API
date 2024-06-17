@@ -15,9 +15,9 @@ def get_db():
         db.close()  
 
 
-@app.post('/')
+@app.post('/users')
 def addUser(requestBody : schemas.User , db :Session = Depends(get_db)):
-    new_user = models.Blog(
+    new_user = models.User(
         name = requestBody.name,
         email = requestBody.email,
         password =requestBody.password
@@ -27,3 +27,27 @@ def addUser(requestBody : schemas.User , db :Session = Depends(get_db)):
     db.refresh(new_user)
 
     return new_user
+
+@app.get('/users')
+def getAll(db:Session=Depends(get_db)):
+    users= db.query(models.User).all()
+    return users
+
+@app.get('/users/{id}')
+def getUser(id , db:Session=Depends(get_db)):
+    user = db.query(models.User).filter(models.User.id ==id).first()
+    return user
+
+@app.delete('/users/{id}')
+def deleteUser(id,db:Session=Depends(get_db)):
+    user= db.query(models.User).filter(models.User.id == id).delete()
+    db.commit()
+    return f"Blog with ID{id} has been deleted"
+
+@app.put('/users/{id}')
+def updateUser(id,requestBody :schemas.User,db:Session = Depends(get_db)):
+    db.query(models.User).filter(models.User.id == id).update({
+        "name": requestBody.name
+    })
+    db.commit()
+    return f"Blog with ID {id} is updated"
