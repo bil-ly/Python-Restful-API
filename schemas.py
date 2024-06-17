@@ -6,6 +6,7 @@ class User(BaseModel):
     email:str
     password:str
 
+# Response
 class ShowUser(BaseModel):
     name:str
     email:str

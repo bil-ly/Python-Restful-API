@@ -1,6 +1,6 @@
-from fastapi import FastAPI , Depends
+from fastapi import FastAPI , Depends , status , Response , HTTPException
 from sqlalchemy.orm import Session
-from typing import Optional
+from typing import Optional ,List
 import schemas, database , models
 from database import engine
 
@@ -15,7 +15,7 @@ def get_db():
         db.close()  
 
 
-@app.post('/users')
+@app.post('/users', status_code=status.HTTP_201_CREATED , response_model=schemas.ShowUser)
 def addUser(requestBody : schemas.User , db :Session = Depends(get_db)):
     new_user = models.User(
         name = requestBody.name,
@@ -28,19 +28,24 @@ def addUser(requestBody : schemas.User , db :Session = Depends(get_db)):
 
     return new_user
 
-@app.get('/users')
+@app.get('/users', response_model=List[schemas.ShowUser])
 def getAll(db:Session=Depends(get_db)):
     users= db.query(models.User).all()
     return users
 
-@app.get('/users/{id}')
-def getUser(id , db:Session=Depends(get_db)):
+@app.get('/users/{id}' , status_code=status.HTTP_200_OK , response_model=schemas.ShowUser)
+def getUser(id ,response : Response ,db:Session=Depends(get_db)):
     user = db.query(models.User).filter(models.User.id ==id).first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail =f'User with id{id} does not exist')
+        
     return user
 
-@app.delete('/users/{id}')
+@app.delete('/users/{id}' , status_code=status.HTTP_204_NO_CONTENT)
 def deleteUser(id,db:Session=Depends(get_db)):
     user= db.query(models.User).filter(models.User.id == id).delete()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail =f'User with id{id} does not exist')
     db.commit()
     return f"Blog with ID{id} has been deleted"
 
@@ -52,6 +57,3 @@ def updateUser(id,requestBody :schemas.User,db:Session = Depends(get_db)):
     db.commit()
     return f"Blog with ID {id} is updated"
 
-##### For Testing
-# Mock database
-users = {}
