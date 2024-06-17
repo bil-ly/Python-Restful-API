@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from typing import Optional ,List
 import schemas, database , models , hashing
 from database import engine
-from routers import user 
+from routers import authentication
 
 
 app = FastAPI()
@@ -16,7 +16,8 @@ def get_db():
     finally:
         db.close() 
 
-#app.include_router(user.router)         
+#app.include_router(user.router)   
+app.include_router(authentication.router)        
 
 # Adding a user into the database
 @app.post('/users', status_code=status.HTTP_201_CREATED , response_model=schemas.ShowUser, tags=["User"])
@@ -54,7 +55,7 @@ def deleteUser(id,db:Session=Depends(get_db)):
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail =f'User with id{id} does not exist')
     db.commit()
-    return f"Blog with ID{id} has been deleted"
+    return f"User with ID{id} has been deleted"
 
 #Updatingting a user by their ID
 @app.put('/users/{id}', tags=["User"])
@@ -63,5 +64,5 @@ def updateUser(id,requestBody :schemas.User,db:Session = Depends(get_db)):
         "name": requestBody.name
     })
     db.commit()
-    return f"Blog with ID {id} is updated"
+    return f"User with ID {id} is updated"
 

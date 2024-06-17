@@ -63,3 +63,37 @@ def test_add_user(setup_db):
     assert user.name == "Abongile Billy"
     assert user.email == "aboBilly@outlook.com"
     db.close()
+
+@pytest.fixture(scope="function")
+def setup_db():
+    # Setup
+    Base.metadata.create_all(bind=engine)
+    
+    # Add initial test data
+    db = TestingSessionLocal()
+    db.add_all([
+        User(name="Alice", email="alice@example.com", password="password1"),
+        User(name="Bob", email="bob@example.com", password="password2"),
+        User(name="Charlie", email="charlie@example.com", password="password3")
+    ])
+    db.commit()
+    db.close()
+    
+    yield
+    
+    # Teardown
+    Base.metadata.drop_all(bind=engine)
+
+def test_get_all_users(setup_db):
+    response = client.get("/users")
+    
+    assert response.status_code == 200
+    data = response.json()
+    assert isinstance(data, list)
+    assert len(data) == 3
+    
+    # Ensure the data matches our test data
+    emails = {user["email"] for user in data}
+    assert "alice@example.com" in emails
+    assert "bob@example.com" in emails
+    assert "charlie@example.com" in emails
