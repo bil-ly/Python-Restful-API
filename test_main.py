@@ -43,23 +43,23 @@ def setup_db():
 
 def test_add_user(setup_db):
     user_data = {
-        "name": "John Doe",
-        "email": "john.doe@example.com",
-        "password": "securepassword123"
+        "name": "Abongile Billy",
+        "email": "aboBilly@outlook.com",
+        "password": "123"
     }
 
     response = client.post("/users", json=user_data)
     
     assert response.status_code == 200
     data = response.json()
-    assert data["name"] == "John Doe"
-    assert data["email"] == "john.doe@example.com"
+    assert data["name"] == "Abongile Billy"
+    assert data["email"] == "aboBilly@outlook.com"
     assert "id" in data
     
     # Check if user was added to the database
     db = TestingSessionLocal()
-    user = db.query(User).filter(User.email == "john.doe@example.com").first()
+    user = db.query(User).filter(User.email == "aboBilly@outlook.com").first()
     assert user is not None
-    assert user.name == "John Doe"
-    assert user.email == "john.doe@example.com"
+    assert user.name == "Abongile Billy"
+    assert user.email == "aboBilly@outlook.com"
     db.close()
