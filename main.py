@@ -18,7 +18,7 @@ def get_db():
 
 #app.include_router(user.router)         
 
-
+# Adding a user into the database
 @app.post('/users', status_code=status.HTTP_201_CREATED , response_model=schemas.ShowUser, tags=["User"])
 def addUser(requestBody : schemas.User , db :Session = Depends(get_db)):
     new_user = models.User(
@@ -32,11 +32,13 @@ def addUser(requestBody : schemas.User , db :Session = Depends(get_db)):
 
     return new_user
 
+#Getting all the users in the db
 @app.get('/users', response_model=List[schemas.ShowUser], tags=["User"])
 def getAll(db:Session=Depends(get_db)):
     users= db.query(models.User).all()
     return users
 
+#Getting a user by their ID
 @app.get('/users/{id}' , status_code=status.HTTP_200_OK , response_model=schemas.ShowUser, tags=["User"])
 def getUser(id ,response : Response ,db:Session=Depends(get_db)):
     user = db.query(models.User).filter(models.User.id ==id).first()
@@ -45,6 +47,7 @@ def getUser(id ,response : Response ,db:Session=Depends(get_db)):
         
     return user
 
+#Deleting a user by their ID
 @app.delete('/users/{id}' , status_code=status.HTTP_204_NO_CONTENT, tags=["User"])
 def deleteUser(id,db:Session=Depends(get_db)):
     user= db.query(models.User).filter(models.User.id == id).delete()
@@ -53,6 +56,7 @@ def deleteUser(id,db:Session=Depends(get_db)):
     db.commit()
     return f"Blog with ID{id} has been deleted"
 
+#Updating a user by their ID
 @app.put('/users/{id}', tags=["User"])
 def updateUser(id,requestBody :schemas.User,db:Session = Depends(get_db)):
     db.query(models.User).filter(models.User.id == id).update({
