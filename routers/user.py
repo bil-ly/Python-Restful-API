@@ -6,3 +6,16 @@ from sqlalchemy.orm import Session
 from typing import Optional ,List
 import database
 from database import engine
+
+""" 
+prefix = "/user" ,
+router = APIRouter(
+    tags=['User']
+)
+
+
+
+
+
+
+"""

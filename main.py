@@ -56,7 +56,7 @@ def deleteUser(id,db:Session=Depends(get_db)):
     db.commit()
     return f"Blog with ID{id} has been deleted"
 
-#Updating a user by their ID
+#Updatingting a user by their ID
 @app.put('/users/{id}', tags=["User"])
 def updateUser(id,requestBody :schemas.User,db:Session = Depends(get_db)):
     db.query(models.User).filter(models.User.id == id).update({
