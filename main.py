@@ -51,3 +51,7 @@ def updateUser(id,requestBody :schemas.User,db:Session = Depends(get_db)):
     })
     db.commit()
     return f"Blog with ID {id} is updated"
+
+##### For Testing
+# Mock database
+users = {}
